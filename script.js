@@ -15,6 +15,158 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Initialize prize wheel
+    const canvas = document.getElementById('wheel');
+    const spinButton = document.getElementById('spin-button');
+    
+    if (canvas && spinButton) {
+        const ctx = canvas.getContext('2d');
+        const sections = 20;
+        const colors = [
+            '#2ECC71', // Hire section
+            '#FF6B6B', '#FF6B6B', '#FF6B6B', '#FF6B6B', '#FF6B6B', 
+            '#FF6B6B', '#FF6B6B', '#FF6B6B', '#FF6B6B', '#FF6B6B',
+            '#FF6B6B', '#FF6B6B', '#FF6B6B', '#FF6B6B', '#FF6B6B',
+            '#FF6B6B', '#FF6B6B', '#FF6B6B', '#FF6B6B' // Don't Hire sections
+        ];
+        let currentRotation = 0;
+
+        // Confetti setup
+        const confettiColors = ['#2ECC71', '#3498db', '#e74c3c', '#f1c40f', '#9b59b6', '#fd79a8'];
+        const confettiCount = 150;
+        let confetti = [];
+
+        class ConfettiParticle {
+            constructor() {
+                this.x = canvas.width / 2;
+                this.y = canvas.height / 2;
+                this.angle = Math.random() * 360;
+                this.speed = 3 + Math.random() * 3;
+                this.radius = 5 + Math.random() * 3;
+                this.color = confettiColors[Math.floor(Math.random() * confettiColors.length)];
+                this.rotation = Math.random() * 360;
+                this.rotationSpeed = -4 + Math.random() * 8;
+                this.gravity = 0.4;
+                this.friction = 0.98;
+                this.opacity = 1;
+                this.vx = Math.cos(this.angle * Math.PI / 180) * this.speed;
+                this.vy = Math.sin(this.angle * Math.PI / 180) * this.speed;
+            }
+
+            update() {
+                this.vy += this.gravity;
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.x += this.vx;
+                this.y += this.vy;
+                this.rotation += this.rotationSpeed;
+                this.opacity -= 0.005;
+                return this.opacity > 0;
+            }
+
+            draw(ctx) {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.rotation * Math.PI / 180);
+                ctx.fillStyle = this.color;
+                ctx.globalAlpha = this.opacity;
+                ctx.fillRect(-this.radius, -this.radius/4, this.radius*2, this.radius/2);
+                ctx.restore();
+            }
+        }
+
+        function createConfetti() {
+            confetti = [];
+            for (let i = 0; i < confettiCount; i++) {
+                confetti.push(new ConfettiParticle());
+            }
+        }
+
+        function animateConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawWheel();
+            
+            confetti = confetti.filter(particle => {
+                const isAlive = particle.update();
+                if (isAlive) {
+                    particle.draw(ctx);
+                }
+                return isAlive;
+            });
+
+            if (confetti.length > 0) {
+                requestAnimationFrame(animateConfetti);
+            }
+        }
+
+        function drawWheel() {
+            const centerX = canvas.width / 2;
+            const centerY = canvas.height / 2;
+            const radius = Math.min(centerX, centerY) - 10;
+            
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw sections
+            for (let i = 0; i < sections; i++) {
+                // Offset to align middle of first section with top
+                const sectionAngle = (2 * Math.PI) / sections;
+                const startAngle = -Math.PI / 2 - (sectionAngle / 2);
+                const angle = startAngle + (i * sectionAngle);
+                const nextAngle = angle + sectionAngle;
+                
+                ctx.beginPath();
+                ctx.moveTo(centerX, centerY);
+                ctx.arc(centerX, centerY, radius, angle, nextAngle);
+                ctx.closePath();
+                
+                ctx.fillStyle = colors[i];
+                ctx.fill();
+                ctx.strokeStyle = '#000';
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Add text
+                ctx.save();
+                ctx.translate(centerX, centerY);
+                ctx.rotate(angle + sectionAngle / 2);
+                ctx.textAlign = 'right';
+                ctx.fillStyle = '#fff';
+                ctx.font = 'bold 14px Arial'; // Slightly smaller font for more sections
+                const text = i === 0 ? 'Hire!' : "Don't Hire";
+                ctx.fillText(text, radius - 15, 5); // Adjusted text position
+                ctx.restore();
+            }
+            
+            // Draw center circle
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 15, 0, 2 * Math.PI);
+            ctx.fillStyle = '#fff';
+            ctx.fill();
+            ctx.strokeStyle = '#000';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+
+        function spinWheel() {
+            // Calculate a random number of full rotations (between 5 and 8)
+            const rotations = 5 + Math.floor(Math.random() * 3);
+            const targetRotation = currentRotation + (360 * rotations);
+            
+            canvas.style.transform = `rotate(${targetRotation}deg)`;
+            currentRotation = targetRotation;
+
+            // Trigger confetti after spin animation completes
+            setTimeout(() => {
+                createConfetti();
+                animateConfetti();
+            }, 4000); // Match this with the CSS transition duration
+        }
+
+        // Initialize wheel
+        drawWheel();
+        spinButton.addEventListener('click', spinWheel);
+    }
+    
     // Initialize skills show more/less
     const showMoreBtn = document.querySelector('.show-more-btn');
     const hiddenSkills = document.querySelectorAll('.skill-item.hidden');
