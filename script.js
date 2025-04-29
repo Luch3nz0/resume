@@ -15,20 +15,33 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
     
+    // Initialize skills show more/less
+    const showMoreBtn = document.querySelector('.show-more-btn');
+    const hiddenSkills = document.querySelectorAll('.skill-item.hidden');
+    
+    if (showMoreBtn && hiddenSkills.length > 0) {
+        showMoreBtn.addEventListener('click', () => {
+            hiddenSkills.forEach(skill => skill.classList.toggle('hidden'));
+            showMoreBtn.textContent = showMoreBtn.textContent === 'Show More' ? 'Show Less' : 'Show More';
+        });
+    }
+    
     // Print button functionality
     const printButton = document.getElementById('print-button');
     printButton.addEventListener('click', function() {
-        // Store the original title
+        // Store the original title and states
         const originalTitle = document.title;
-        
-        // Store collapsed state of all sections
         const jobDetails = document.querySelectorAll('.job-details');
         const toggleBtns = document.querySelectorAll('.toggle-btn');
         const collapsedStates = Array.from(jobDetails).map(detail => detail.classList.contains('collapsed'));
         
-        // Expand all sections for printing
+        // Store skills state
+        const skillsHidden = Array.from(hiddenSkills).map(skill => skill.classList.contains('hidden'));
+        
+        // Expand all sections and skills for printing
         jobDetails.forEach(detail => detail.classList.remove('collapsed'));
         toggleBtns.forEach(btn => btn.classList.remove('collapsed'));
+        hiddenSkills.forEach(skill => skill.classList.remove('hidden'));
         
         // Set an empty title before printing to hide it
         document.title = "";
@@ -45,6 +58,13 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (collapsedStates[index]) {
                     detail.classList.add('collapsed');
                     toggleBtns[index].classList.add('collapsed');
+                }
+            });
+            
+            // Restore skills state
+            hiddenSkills.forEach((skill, index) => {
+                if (skillsHidden[index]) {
+                    skill.classList.add('hidden');
                 }
             });
         }, 100);
