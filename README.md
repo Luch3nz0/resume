@@ -1,2 +1,5 @@
-# resume
-my resume
+# My resume
+
+a project to practice html, CSS, javascript and git.
+
+hope you guys enjoy it :)
