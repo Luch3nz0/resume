@@ -284,12 +284,17 @@ li {
 }
 
 /* Skills section */
+.skills-container {
+    position: relative;
+}
+
 .skills-list {
     display: flex;
     flex-wrap: wrap;
     gap: 10px;
     list-style-type: none;
     padding: 0;
+    margin-bottom: 10px;
 }
 
 .skill-item {
@@ -299,6 +304,35 @@ li {
     color: var(--skill-text);
     font-size: 0.9rem;
     transition: background-color var(--transition-speed), color var(--transition-speed);
+}
+
+.skill-item.hidden {
+    display: none;
+}
+
+.show-more-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    cursor: pointer;
+    font-size: 0.9rem;
+    padding: 5px 10px;
+    margin-top: 10px;
+    transition: color 0.2s;
+}
+
+.show-more-btn:hover {
+    color: var(--primary-dark);
+}
+
+/* For print, show all skills */
+@media print {
+    .skill-item.hidden {
+        display: inline-block;
+    }
+    .show-more-btn {
+        display: none;
+    }
 }
 
 /* Education section */
