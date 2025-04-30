@@ -1,4 +1,4 @@
-# My resume
+# Resume website
 
 a project to practice html, CSS, javascript and git.
 
