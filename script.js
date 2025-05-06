@@ -190,19 +190,41 @@ document.addEventListener('DOMContentLoaded', function() {
         // Store skills state
         const skillsHidden = Array.from(hiddenSkills).map(skill => skill.classList.contains('hidden'));
         
-        // Expand all sections and skills for printing
+        // Expand all sections and skills for PDF
         jobDetails.forEach(detail => detail.classList.remove('collapsed'));
         toggleBtns.forEach(btn => btn.classList.remove('collapsed'));
         hiddenSkills.forEach(skill => skill.classList.remove('hidden'));
         
-        // Set an empty title before printing to hide it
-        document.title = "";
+        // Hide buttons for PDF
+        printButton.style.display = 'none';
+        themeToggle.style.display = 'none';
         
-        // Print the page
-        window.print();
-        
-        // Restore the original states after printing
-        setTimeout(function() {
+        // Hide prize wheel section
+        const prizeWheel = document.getElementById('prize-wheel');
+        if (prizeWheel) {
+            prizeWheel.style.display = 'none';
+        }
+
+        // PDF options
+        const opt = {
+            margin: [10, 10],
+            filename: 'Enzo_Calixto_Resume.pdf',
+            image: { type: 'jpeg', quality: 0.98 },
+            html2canvas: { 
+                scale: 2,
+                useCORS: true,
+                letterRendering: true
+            },
+            jsPDF: { 
+                unit: 'mm', 
+                format: 'a4', 
+                orientation: 'portrait' 
+            }
+        };
+
+        // Generate PDF
+        html2pdf().set(opt).from(document.body).save().then(() => {
+            // Restore the original states after PDF generation
             document.title = originalTitle;
             
             // Restore previous collapsed states
@@ -219,7 +241,16 @@ document.addEventListener('DOMContentLoaded', function() {
                     skill.classList.add('hidden');
                 }
             });
-        }, 100);
+            
+            // Show buttons again
+            printButton.style.display = 'flex';
+            themeToggle.style.display = 'flex';
+            
+            // Show prize wheel again
+            if (prizeWheel) {
+                prizeWheel.style.display = 'block';
+            }
+        });
     });
     
     // Theme toggle functionality
