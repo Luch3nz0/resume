@@ -346,13 +346,69 @@ li {
     color: var(--primary-dark);
 }
 
-/* For print, show all skills */
+/* Print styles */
 @media print {
+    body {
+        background-color: white;
+        padding: 0;
+        font-size: 11pt; /* Optimize font size for print */
+    }
+    
     .skill-item.hidden {
         display: inline-block;
     }
+    
     .show-more-btn {
         display: none;
+    }
+    
+    .skills-list {
+        gap: 8px; /* Reduce gap for print */
+        page-break-inside: avoid;
+    }
+    
+    .skill-item {
+        padding: 4px 10px; /* Reduce padding for print */
+        font-size: 10pt; /* Smaller font size for skills in print */
+        break-inside: avoid;
+        white-space: nowrap;
+    }
+    
+    section {
+        break-inside: avoid;
+        page-break-inside: avoid;
+        margin-bottom: 10px; /* Reduce margins for print */
+    }
+    
+    header, section {
+        box-shadow: none;
+    }
+    
+    .print-button, .theme-toggle {
+        display: none;
+    }
+    
+    /* Ensure proper color contrast in print */
+    body.dark-mode {
+        --text-color: #000;
+        --text-light: #333;
+        --bg-color: #fff;
+        --card-bg: #fff;
+        --heading-color: #000;
+        --skill-bg: #e9f2fb;
+        --skill-text: #3498db;
+        --border-color: #000;
+    }
+    
+    /* Optimize layout for print */
+    main {
+        display: grid;
+        grid-template-columns: 2fr 1fr;
+        gap: 15px;
+    }
+    
+    .right-column {
+        page-break-before: avoid;
     }
 }
 
@@ -455,35 +511,6 @@ body.dark-mode a:visited {
         bottom: 20px;
         right: 15px;
     }
-}
-
-/* Print styles */
-@media print {
-    body {
-        background-color: white;
-        padding: 0;
-    }
-    
-    body.dark-mode {
-        --text-color: #000;
-        --text-light: #333;
-        --bg-color: #fff;
-        --card-bg: #fff;
-        --heading-color: #000;
-        --skill-bg: #e9f2fb;
-        --skill-text: #3498db;
-    }
-    
-    header, section {
-        box-shadow: none;
-        break-inside: avoid;
-    }
-    
-    .print-button, .theme-toggle {
-        display: none;
-    }
-    
-    
 }
 
 .wheel-container {
